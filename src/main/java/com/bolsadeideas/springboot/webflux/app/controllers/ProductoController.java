@@ -44,7 +44,7 @@ public class ProductoController {
         return file.transferTo(new File(path + producto.getFoto())).then(service.save(producto))
                 .map(p -> ResponseEntity
                 .created(URI.create("/api/productos".concat(p.getId())))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(p)
         );
     }
@@ -58,7 +58,7 @@ public class ProductoController {
                     .replace("\\", ""));
 
             return file.transferTo(new File(path + p.getFoto())).then(service.save(p));
-        }).map(p -> ResponseEntity.ok(p))
+        }).map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
@@ -66,7 +66,7 @@ public class ProductoController {
     public Mono<ResponseEntity<Flux<Producto>>>  lista() {
         return Mono.just(
                 ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .body(service.findAll())
         );
     }
@@ -74,7 +74,7 @@ public class ProductoController {
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Producto>> ver(@PathVariable String id) {
         return service.findById(id).map(p -> ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(p)
         ).defaultIfEmpty(ResponseEntity.notFound().build());
     }
@@ -92,7 +92,7 @@ public class ProductoController {
                 respuesta.put("timestamp", new Date());
                 return ResponseEntity
                         .created(URI.create("/api/productos".concat(p.getId())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .body(respuesta);
             });
         }).onErrorResume(t -> {
@@ -118,7 +118,7 @@ public class ProductoController {
             p.setCategoria(producto.getCategoria());
             return service.save(p);
         }).map(p -> ResponseEntity.created(URI.create("/api/productos/".concat(p.getId())))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(p))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

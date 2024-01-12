@@ -47,8 +47,8 @@ public class ProductoHandler {
                                     .replace("\\", "-"));
                             return file.transferTo(new File(path + p.getFoto())).then(service.save(p));
                 })).flatMap(p -> ServerResponse.created(URI.create("/api/v2/productos/".concat(p.getId())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .body(fromObject(p)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(fromValue(p)))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
@@ -75,21 +75,21 @@ public class ProductoHandler {
                             p.setCreateAt(new Date());
                             return file.transferTo(new File(path + p.getFoto())).then(service.save(p));
                         })).flatMap(p -> ServerResponse.created(URI.create("/api/v2/productos/".concat(p.getId())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .body(fromObject(p)));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(fromValue(p)));
     }
 
     public Mono<ServerResponse> listar(ServerRequest request) {
         return ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(service.findAll(), Producto.class);
     }
 
     public Mono<ServerResponse> ver(ServerRequest request) {
         String id = request.pathVariable("id");
         return service.findById(id).flatMap(p -> ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(fromObject(p)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(fromValue(p)))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
@@ -104,15 +104,15 @@ public class ProductoHandler {
                 return Flux.fromIterable(errors.getFieldErrors())
                         .map(fieldError -> "El campo " + fieldError.getField() + " " + fieldError.getDefaultMessage())
                         .collectList()
-                        .flatMap(list -> ServerResponse.badRequest().body(fromObject(list)));
+                        .flatMap(list -> ServerResponse.badRequest().body(fromValue(list)));
             } else {
                 if (p.getCreateAt() == null) {
                     p.setCreateAt(new Date());
                 }
                 return service.save(p).flatMap(pdb -> ServerResponse
                         .created(URI.create("/api/v2/productos/".concat(pdb.getId())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .body(fromObject(pdb)));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(fromValue(pdb)));
             }
         });
     }
@@ -129,7 +129,7 @@ public class ProductoHandler {
             db.setCategoria(req.getCategoria());
             return db;
         }).flatMap(p -> ServerResponse.created(URI.create("/api/v2/productos/".concat(p.getId())))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(service.save(p), Producto.class))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
